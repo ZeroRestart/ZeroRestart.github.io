@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="ZeroRestart" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      漏洞分析 
+      
+      
+      |
+    
+     ZeroRestart&#39;s Blog
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">ZeroRestart</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+<!-- LaTex Display -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  }
+};
+</script>
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">漏洞分析</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2021-12-18 09:57:48
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="学习笔记">
+                    <b>#</b> 学习笔记
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <meta name="referrer" content="no-referrer"/>
+## Web漏洞分析
+
+<p>漏洞产生于用户数据交互的地方</p>
+<h3 id="测试流程"><a href="#测试流程" class="headerlink" title="测试流程:"></a><strong>测试流程</strong>:</h3><ol>
+<li><p>信息收集</p>
+<p>扫目录，爬网站，dns解析记录，whois信息收集，旁站C段，子域名，高位端口</p>
+</li>
+<li><p>测注入漏洞 / -0，弱口令，找后台</p>
+</li>
+<li><p>识别cms –查看对应cms漏洞</p>
+<p>通过百度搜索对应cms漏洞，</p>
+<p>下载cms分析源码（可以找到后台，数据库路径，编辑器，上传，数据库备份） </p>
+<p><em>如果不能识别cms漏洞</em>：</p>
+<p>​    通过信息收集，挖掘web程序漏洞（sql 文件上传，xss，csrf，ssrf，逻辑，等）</p>
+</li>
+</ol>
+<h3 id="扫描工具"><a href="#扫描工具" class="headerlink" title="扫描工具"></a>扫描工具</h3><blockquote>
+<p>nmap,awvs,appscan,burpsuite,xray,w3af,skipfish,nikto,nessus</p>
+</blockquote>
+<h4 id="namp-端口扫描之王"><a href="#namp-端口扫描之王" class="headerlink" title="namp 端口扫描之王"></a>namp 端口扫描之王</h4><h6 id="主机端口扫描"><a href="#主机端口扫描" class="headerlink" title="主机端口扫描"></a>主机端口扫描</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">nmap 192.168.0.2 &gt;&gt; 扫描单个主机</span><br><span class="line">nmap 192.168.0.0/24 &gt;&gt; 扫描整个子网(默认扫描常用的100个端口是否开放)</span><br><span class="line">nmap 192.168.0.1 192.168.0.2 &gt;&gt; 多个主机扫描</span><br><span class="line">nmap 192.168.0.1-100 &gt;&gt; 扫描ip位置为192.168.0.1-192.168.0.100 内所有主机</span><br><span class="line">nmap -iL ip文件 &gt;&gt; 扫描文件里的所有ip</span><br><span class="line">	 -exclude 192.168.0.3 &gt;&gt; 排除此ip</span><br><span class="line">	 -excludefile 文件 &gt;&gt; 对文件里的ip不进行扫描</span><br><span class="line">nmap -sL 192.168.0.0/24 &gt;&gt; 查看扫描的所有主机</span><br><span class="line">nmap -F -sT -v 192.168.0.138 &gt;&gt; 扫描常见的100个端口,使用TCP扫描，，查看扫描信息</span><br><span class="line">	 -p 扫描指定端口</span><br><span class="line">	 -sS 使用syn扫描（syn扫描没有建立完整的三次握手，速度快，需要root权限）</span><br><span class="line">nmap -PU 192.168.0.0/24 &gt;&gt; 使用udp 探测主机</span><br><span class="line">	 -sV 192.168.0.138 &gt;&gt; 服务版本探测</span><br><span class="line">	 -sV --script unusual-port 192.168.0.138 &gt;&gt; 使用脚本精准确认端口上允许的服务</span><br><span class="line">nmap -O 192.168.0.138 &gt;&gt; 探测主机操作系统</span><br><span class="line">     -A 同理</span><br><span class="line">	 -oN 导出扫描结果</span><br><span class="line">	 -oX 导出扫描结果xml格式</span><br><span class="line">	 </span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>端口扫描状态</strong></p>
+<p><img src="https://i0.hdslb.com/bfs/album/66fbdf6d845f0b55750dc7ca4ca2cdb3a8a2803f.png" alt="image-20211204160410591"></p>
+<h6 id="漏洞探测"><a href="#漏洞探测" class="headerlink" title="漏洞探测"></a>漏洞探测</h6><blockquote>
+<p>nmap 可以扫cve漏洞，如果扫出来直接配合msf 秒杀</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nmap --script vuln 192.168.0.138 &gt;&gt; 扫描系统漏洞</span><br><span class="line">nmap -p 8080 --script http-iis-short-name-brute 192.168.0.138 &gt;&gt; IIS段文件名泄露</span><br><span class="line">nmap --max-parallelism 800--script http-slowloris 192.168.0.138 &gt;&gt; 拒绝服务</span><br><span class="line">nmap --script mysql-empty-password 203.195.139.153 &gt;&gt; 验证mysql匿名访问</span><br></pre></td></tr></table></figure>
+
+<h6 id="防火墙躲避"><a href="#防火墙躲避" class="headerlink" title="防火墙躲避"></a>防火墙躲避</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NMAP -D 1.1.1.1,222.222.222.222 www.cracer.com &gt;&gt; 使用诱饵隐蔽扫描</span><br><span class="line">	 --source-port 源端口欺骗</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="AWVS"><a href="#AWVS" class="headerlink" title="AWVS"></a>AWVS</h4><h4 id="APPSCAN"><a href="#APPSCAN" class="headerlink" title="APPSCAN"></a>APPSCAN</h4><h4 id="burp"><a href="#burp" class="headerlink" title="burp"></a>burp</h4><h4 id="xray"><a href="#xray" class="headerlink" title="xray"></a>xray</h4><blockquote>
+<p>长亭开发的漏洞扫描器</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.xray.cool/#/README">简介 - xray 安全评估工具文档</a></p>
+<h5 id="快速使用"><a href="#快速使用" class="headerlink" title="快速使用"></a>快速使用</h5><p><strong>使用基础爬虫爬取并对爬虫爬取的链接进行漏洞扫描</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xray webscan --basic-crawler 目标站点 --html-output test.html </span><br></pre></td></tr></table></figure>
+
+<p>​        先爬取—-漏洞扫描—保存test.html</p>
+<p><img src="https://i0.hdslb.com/bfs/album/ebdddbca3d0cf8206fb972306dd9a791e4df4ded.png" alt="image-20211209211332907"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/099a4c2304cdcb3ce11bbc66f75d2c3207fec5a8.png" alt="image-20211209211916986"></p>
+<p><strong>手动指定本次允许的插件</strong><br>    就是设置扫描的指定漏洞</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xray webscan --plugins cmd-injection,sqldet --url 目标地址</span><br><span class="line">xray webscan --plugins cmd-injection,sqldet --listen 127.0.0.1:7777</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用http代理进行被动扫描</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xray webscan --listen 127.0.0.1:7777 --html-output test.html</span><br></pre></td></tr></table></figure>
+
+<p>​    浏览器设置此代理，只要点击页面就会测试此页面</p>
+<p><strong>只扫描单个url，不使用爬虫</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xray webscan --url 目标url --html-output test.html</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="Xray配合crawlergo-联动"><a href="#Xray配合crawlergo-联动" class="headerlink" title="Xray配合crawlergo 联动"></a>Xray配合crawlergo 联动</h5><blockquote>
+<p>crawlergo 是360 团队开发的一款爬虫非常强大，与xray的被动扫描配合使用</p>
+</blockquote>
+<p><img src="https://i0.hdslb.com/bfs/album/1f69ab812227b9c83c02b8a2c39e08a9b8682ddf.png" alt="image-20211210183434767"></p>
+<p><strong>使用</strong></p>
+<ol>
+<li><p>打开xray代理（启动被动扫描）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xray webscna --listen 127.0.0.1:5656 --html-output test.html</span><br></pre></td></tr></table></figure></li>
+<li><p>启动crawlergo配合xray联动的脚本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 launcher_new.py // 需要在target.txt里面放入目标url</span><br></pre></td></tr></table></figure></li>
+<li><p>坐等结果</p>
+<p><img src="https://i0.hdslb.com/bfs/album/221589a1a5d929c5f22328b1e35556ea785ebfa1.png" alt="image-20211210183731662"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/efe3bcfeacd70ce3534262600d9cb71271a42676.png" alt="image-20211210183802483"></p>
+</li>
+</ol>
+<h4 id="Nessus"><a href="#Nessus" class="headerlink" title="Nessus"></a>Nessus</h4><blockquote>
+<p>Nessus 是目前全世界最多人使用的系统漏洞扫描与分析软件。总共有超过75,000个机构使用Nessus 作为扫描该机构电脑系统的软件。该工具提供完整的电脑漏洞扫描服务，并随时更新漏洞数据库。</p>
+</blockquote>
+<p><img src="https://i0.hdslb.com/bfs/album/86cbb5ec2d77806d4f10ddefd7833b34c062e1bc.png" alt="image-20211211011013108"></p>
+<p><strong>插件分类</strong></p>
+<p><em><strong>网络目标插件</strong></em></p>
+<p><img src="https://i0.hdslb.com/bfs/album/559af092955a41e534c046657ba161b87f629f4e.png" alt="image-20211211011302189"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/faab0cb1b7e4384d22e2c546df40f1805f60225a.png" alt="image-20211211011306481"></p>
+<p><em><strong>windows</strong></em>系统插件</p>
+<p><img src="https://i0.hdslb.com/bfs/album/19ea7c4af7e43807ec3cad0edf7b7036fc1a6965.png" alt="image-20211211011328618"></p>
+<p>liunx<em><strong>系统漏洞</strong></em></p>
+<p><img src="https://i0.hdslb.com/bfs/album/0601af0d83113320a27d65e435debd28e720f001.png" alt="image-20211211011337796"></p>
+<h3 id="kali漏洞分析工具"><a href="#kali漏洞分析工具" class="headerlink" title="kali漏洞分析工具"></a>kali漏洞分析工具</h3><h4 id="skipfish"><a href="#skipfish" class="headerlink" title="skipfish"></a>skipfish</h4><blockquote>
+<p>skipfish是一款web应用安全侦查工具。skipfish会利用递归怕重和基于字典的探针生成一副交互式网站地图。最终生成的地图绘制通过安全检查后输出。</p>
+</blockquote>
+<p>使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">skipfish -o 输出位置 -W/-S (字典文件位置) 目标网站</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:\Users\Hacker\AppData\Roaming\Typora\typora-user-images\image-20211208182432312.png" alt="image-20211208182432312"></p>
+<h4 id="W3AF"><a href="#W3AF" class="headerlink" title="W3AF"></a>W3AF</h4><h4 id="nikto"><a href="#nikto" class="headerlink" title="nikto"></a>nikto</h4><blockquote>
+<p>Nikto 是一款开放源代码的、功能强大的WEB扫描评估软件，能对web服务器多种安全项目进行测试的扫描软件，去寻找已知有名的漏洞，能在230多种服务器上扫描出 2600多种有潜在危险的文件、CGI及其他问题，它可以扫描指定主机的WEB类型、主机名、特定目录、COOKIE、特定CGI漏洞、返回主机允许的 http模式等等。它也使用LibWhiske库，但通常比Whisker更新的更为频繁。Nikto是网管安全人员必备的WEB审计工具之一。</p>
+</blockquote>
+<p>使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">nikto -h 扫描目录 -p 端口</span><br><span class="line">nikto -h 扫描目标 -T 编号 -o 输出目录</span><br><span class="line">	1     Interesting File / Seen in logs</span><br><span class="line">    2     Misconfiguration / Default File</span><br><span class="line">    3     Information Disclosure</span><br><span class="line">    4     Injection (XSS/Script/HTML)</span><br><span class="line">    5     Remote File Retrieval - Inside Web Root</span><br><span class="line">    6     Denial of Service</span><br><span class="line">    7     Remote File Retrieval - Server Wide</span><br><span class="line">    8     Command Execution / Remote Shell</span><br><span class="line">    9     SQL Injection</span><br><span class="line">    0     File Upload</span><br><span class="line">    a     Authentication Bypass</span><br><span class="line">    b     Software Identification</span><br><span class="line">    c     Remote Source Inclusion</span><br><span class="line">    d     WebService</span><br><span class="line">    e     Administrative Console</span><br><span class="line">    x     Reverse Tuning Options (i.e., include all except specified)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/ec1a38ce17d6c377940bdf636575e8fec994b92c.png" alt="image-20211208203211103"></p>
+<h4 id="WFUZZ"><a href="#WFUZZ" class="headerlink" title="WFUZZ"></a>WFUZZ</h4><blockquote>
+<p>是一款用来进行web应用暴力猜解的工具，支持对网站目录、登录信息、应用资源文件等暴力猜解，还可以进行get及post参数的猜解，sql注入、xss漏洞的测试等，该工具所有功能都依赖于字典文件。</p>
+</blockquote>
+<p>使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wfuzz -c -z file,字典文件 --hc 404 -o html 域名/FUZZ &gt;1.html</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/76cd589d90f1dfe3954576bd50e69d72404cd631.png" alt="image-20211208205407361"></p>
+<h4 id="wpscan"><a href="#wpscan" class="headerlink" title="wpscan"></a>wpscan</h4><blockquote>
+<p>一款wordpress 博客安全扫描器，可以扫出版本，主题后台，插件以及爆破后台用户名密码等</p>
+</blockquote>
+<p>使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">wpscan --url 目标地址 -e </span><br><span class="line">-e 爆破</span><br><span class="line">-e u 爆破用户名</span><br><span class="line">-e p 爆破插件</span><br><span class="line">-e t 爆破主题</span><br><span class="line"></span><br><span class="line">ap 所有插件</span><br><span class="line">vp 漏洞插件</span><br><span class="line"></span><br><span class="line">at 所有主题</span><br><span class="line">vt 漏洞主题</span><br><span class="line"></span><br><span class="line">-U admin -P /root/pass.txt 爆破用户密码</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/fd4164b1c424ebf2c331e95db91de461f247140c.png" alt="image-20211208231043156"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/81b20b4b078e5562ed342e30b0a529d3a79d6617.png" alt="image-20211208231156040"></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><p><strong>信息收集</strong></p>
+<p>目录扫描：御剑/dirbuster</p>
+<p>爬行：中国菜刀爬行版/360 crawlergo</p>
+<p>子域名： layer子域名挖掘/oneforall/</p>
+<p>​                    kali dnsenum/subdoamin</p>
+<p>工具性站点</p>
+<p>​    爱站，站长工具，webscna.cc</p>
+<ul>
+<li><p>信息放大</p>
+<p>如果测试的目标站点很安全可以，可以把目标放大，发现更多目标关联的资产</p>
+<p>旁站—-》 C段 —》 子域名</p>
+<p>ip建站</p>
+<p>端口建站： 教育/政府/oa/办公系统</p>
+<p>​    nmap -sV 1.1.1.1</p>
+<p>域名建站： 子域名收集、爱站、旁站查询的网站</p>
+<p>目录建站： 目录扫描</p>
+<ul>
+<li><p>举个栗子</p>
+<p>当测试的目标网站没有漏洞。 可以找网站所有可以攻击的地方。</p>
+<p>如： 子域名、旁站、端口服务（22、3389、6379等）</p>
+<p>如果web没有漏洞，那么可以看看 <u><em>服务有没有？ 服务器系统存不存在？ 这个站点安全、它的其它站点哪？ 如果拿下旁站通过提权，也可以拿到目标站点</em></u></p>
+<p>子域名： <strong>柿子挑软的捏（找低版本的更容易下手）</strong></p>
+<p>工具： layer子域名挖掘+ Google hacking site:baidu.com</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>漏洞扫描</strong></p>
+<p>awvs/appscan/burpsuite/nessus</p>
+<p>例如扫到ms17-010 直接使用msf利用</p>
+</li>
+<li><p><strong>弱漏洞利用</strong></p>
+<p>暴库利用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">爆出网站数据库文件位置</span><br><span class="line">to parent directory</span><br><span class="line">last modified Description</span><br><span class="line">转到父目录 </span><br><span class="line">inurl:/.asp&lt;id=&lt;% &lt;%&lt; %   //可能有些网站会被挂马</span><br><span class="line">绕防护下载文件</span><br><span class="line">例如： #sdsf.mdb 如法下载看可以编码 %23sdsf.mdb </span><br><span class="line"></span><br><span class="line">如果数据库文件本身是asp\asa\cer文件，也可以直接写shell</span><br><span class="line">	比如找前台留言，插入木马。因为留言内容会报错的数据库，尝试连接</span><br><span class="line">	data/sfa.asp 可以使用迅雷下载</span><br><span class="line">    data/#@$@#$fasdas$#$534-=.asp 可以s</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>下载漏洞</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">下载文件名称为参数传递并且可控可操作</span><br><span class="line">https://xxxx.com/xx/news/down.asp?FileName=../../../config.asp</span><br><span class="line"></span><br><span class="line">下载漏洞利用</span><br><span class="line">	通过蜘蛛爬行</span><br><span class="line">	找到该url</span><br><span class="line">	下载： conn.asp（数据库连接文件） config.php（数据库配置文件） config.asp db.mbd</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>后台密码爆破</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">常见初始密码弱口令：</span><br><span class="line">	admin、admin888、admin123、123456、111/123/111111/888888</span><br><span class="line">逻辑万能密码</span><br><span class="line">asp: &#x27;or&#x27;=&#x27;or&#x27;</span><br><span class="line">php: admin&#x27; or 1=1 --+</span><br><span class="line">爆破工具：</span><br><span class="line">	有验证码无验证码</span><br><span class="line">	burpsuite</span><br><span class="line">	一些python密码破解脚本</span><br><span class="line">	httpfuzzer (有验证码使用)</span><br><span class="line">	针对性破解工具</span><br><span class="line">	</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>EXP</strong>利用</p>
+<blockquote>
+<p>很多网站渗透的时候都能发现其源码类型，通常可以百度漏洞对应的exp</p>
+</blockquote>
+<p>网站源码漏洞</p>
+<p>如： 织梦、phpcms、strus2、phpweb等</p>
+<p>自己收集exp，即使跟进新爆出exp，并复现收集，下次碰到可以直接利用</p>
+</li>
+<li><p>**批量漏洞检测 **</p>
+<p>比如你找到这个网站存在漏洞，可以尝试去寻找<em><strong>它的关键字，或者banner信息</strong></em>。去批量搜索相同类型的站点然后批量利用</p>
+<p><strong>一般 先找漏洞 然后找该网站的特性</strong> 进行批量利用</p>
+</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2021/12/17/crecar%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2021-12-18 09:57:48
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="学习笔记">
+                        <b>#</b> 学习笔记
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="toc-text">测试流程:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E5%B7%A5%E5%85%B7"><span class="toc-text">扫描工具</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#namp-%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F%E4%B9%8B%E7%8E%8B"><span class="toc-text">namp 端口扫描之王</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-text">主机端口扫描</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%8E%A2%E6%B5%8B"><span class="toc-text">漏洞探测</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E8%BA%B2%E9%81%BF"><span class="toc-text">防火墙躲避</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AWVS"><span class="toc-text">AWVS</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#APPSCAN"><span class="toc-text">APPSCAN</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#burp"><span class="toc-text">burp</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#xray"><span class="toc-text">xray</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E4%BD%BF%E7%94%A8"><span class="toc-text">快速使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Xray%E9%85%8D%E5%90%88crawlergo-%E8%81%94%E5%8A%A8"><span class="toc-text">Xray配合crawlergo 联动</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Nessus"><span class="toc-text">Nessus</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kali%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7"><span class="toc-text">kali漏洞分析工具</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#skipfish"><span class="toc-text">skipfish</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#W3AF"><span class="toc-text">W3AF</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#nikto"><span class="toc-text">nikto</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#WFUZZ"><span class="toc-text">WFUZZ</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#wpscan"><span class="toc-text">wpscan</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+
+  <div id="vcomments"></div>
+
+  <script>
+    new Valine({
+      el: '#vcomments',
+      appId: 'AJPST8AlszUhppXoNjsA7kyD-gzGzoHsz',
+      appKey: 'QhSl0X5FDQbqN3mjUYOiSicH',
+      placeholder: 'Welcome!',
+      avatar: 'retro',
+      lang: 'zh-CN'
+    })
+  </script>
+
+    <style>
+      .comments-container .v .vempty {
+        display: none!important;
+      }
+    </style>
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        <div class="footer">
+  
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://zerorestart.github.io/">Copyright © ZeroRestart 2021</a>
+        
+    </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://zerorestart.github.io/">Powered by ZeroRestart</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90 + '&url=' + http%3A%2F%2Fexample.com%2F2021%2F12%2F18%2Fcrecar%25E5%25AD%25A6%25E4%25B9%25A0%25E7%25AC%2594%25E8%25AE%25B0%2F2-%25E6%25BC%258F%25E6%25B4%259E%25E5%2588%2586%25E6%259E%2590%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://example.com/2021/12/18/crecar%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>
